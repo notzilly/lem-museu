@@ -12,3 +12,4 @@
 */
 
 Route::get('/', 'TesteController@index');
+Route::get('/xml/{filename}', 'Xml@convertXML');
