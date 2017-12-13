@@ -9,26 +9,20 @@ class EmigranteController extends Controller
 
     public function index(){
         
-        $doc = new \DOMDocument();
+        $lugarTags = new \DOMDocument();
     
-        $doc->load(base_path('docs/MuseuEmigracaoBD.xml'));
+        $doc->load(base_path('docs/museu.xml'));
     
-        $table = $doc->getElementsByTagName('table');
+        $emigrantesTags = $doc->getElementsByTagName('IdentificacaoEmigrante');
     
         $emigrantes = [];
 
-        foreach($table as $emigr) {
-    
-            if($emigr->getAttribute('name') == 'IdentificacaoEmigrante'){
-                
-                $emigr = $emigr->getElementsByTagName('column');
-    
-                $emigrantes[] = [
-                    'id' => $emigr->item(0)->nodeValue,
-                    'nome' => $emigr->item(1)->nodeValue
-                ];
-    
-            }
+        foreach($emigrantesTags as $emigr) {
+            
+            $emigrantes[] = [
+                'id' => $emigr->getElementsByTagName('idEmigrante')->item(0)->nodeValue,
+                'nome' => $emigr->getElementsByTagName('nome')->item(0)->nodeValue
+            ];
 
         }
 
@@ -56,34 +50,29 @@ class EmigranteController extends Controller
         
         $doc = new \DOMDocument();
     
-        $doc->load(base_path('docs/MuseuEmigracaoBD.xml'));
+        $doc->load(base_path('docs/museu.xml'));
     
-        $table = $doc->getElementsByTagName('table');
+        $emigrantesTags = $doc->getElementsByTagName('IdentificacaoEmigrante');
     
         $emigrante = [];
     
-        foreach($table as $emigr) {
-    
-            if($emigr->getAttribute('name') == 'IdentificacaoEmigrante'){
+        foreach($emigrantesTags as $emigr) {
                 
-                $emigr = $emigr->getElementsByTagName('column');
+            if($emigr->getElementsByTagName('idEmigrante')->item(0)->nodeValue == $id){
+                
+                $emigrante[] = [
+                    'id' => $id,
+                    'nome' => $emigr->getElementsByTagName('nome')->item(0)->nodeValue,
+                    'dtNasc' => $emigr->getElementsByTagName('dtNasc')->item(0)->nodeValue,
+                    'nomeConj' => $emigr->getElementsByTagName('nomeConj')->item(0)->nodeValue,
+                    'filiacao' => self::filiacao($doc, $emigr->getElementsByTagName('idFiliacao')->item(0)->nodeValue),
+                    'naturalidade' => self::naturalidade($doc, $emigr->getElementsByTagName('idNaturalidade')->item(0)->nodeValue),
+                    'processos' => self::processos($doc, $id)
+                ];
+                break;
 
-                if($emigr->item(0)->nodeValue == $id){
-                    
-                    $emigrante[] = [
-                        'id' => $emigr->item(0)->nodeValue,
-                        'nome' => $emigr->item(1)->nodeValue,
-                        'dtNasc' => $emigr->item(2)->nodeValue,
-                        'nomeConj' => $emigr->item(4)->nodeValue,
-                        'filiacao' => self::filiacao($table, $emigr->item(5)->nodeValue),
-                        'naturalidade' => self::naturalidade($table, $emigr->item(6)->nodeValue),
-                        'processos' => self::processos($table, $emigr->item(0)->nodeValue)
-                    ];
-                    break;
-
-                }
-    
             }
+    
             
         }
         dd($emigrante);
@@ -91,22 +80,18 @@ class EmigranteController extends Controller
 
     }
 
-    private function filiacao($table, $id){
+    private function filiacao($doc, $id){
+
+        $filiacaoTags = $doc->getElementsByTagName('Filiacao');
         
-        foreach($table as $emigr) {
+        foreach($filiacaoTags as $filiacao) {
 
-            if($emigr->getAttribute('name') == 'Filiacao'){
-
-                $emigr = $emigr->getElementsByTagName('column');
-
-                if($emigr->item(0)->nodeValue == $id){
-                    
-                    return [
-                        'pai' => $emigr->item(3)->nodeValue,
-                        'mae' => $emigr->item(4)->nodeValue
-                    ];
-
-                }
+            if($filiacao->getElementsByTagName('idFiliacao')->item(0)->nodeValue == $id){
+                
+                return [
+                    'pai' => $filiacao->getElementsByTagName('nomePai')->item(0)->nodeValue,
+                    'mae' => $filiacao->getElementsByTagName('nomeMae')->item(0)->nodeValue
+                ];
 
             }
 
@@ -114,24 +99,20 @@ class EmigranteController extends Controller
 
     }
 
-    private function naturalidade($table, $id){
+    private function naturalidade($doc, $id){
+
+        $localidadeTags = $doc->getElementsByTagName('Localidade');
         
-        foreach($table as $emigr) {
+        foreach($localidadeTags as $localidade) {
 
-            if($emigr->getAttribute('name') == 'Localidade'){
-
-                $emigr = $emigr->getElementsByTagName('column');
-
-                if($emigr->item(0)->nodeValue == $id){
-                    
-                    return [
-                        'freguesia' => $emigr->item(1)->nodeValue,
-                        'concelho' => $emigr->item(2)->nodeValue,
-                        'distrito' => $emigr->item(3)->nodeValue,
-                        'lugar' => self::lugar($table, $emigr->item(0)->nodeValue)
-                    ];
-
-                }
+            if($localidade->getElementsByTagName('idLocalidade')->item(0)->nodeValue == $id){
+                
+                return [
+                    'freguesia' => $localidade->getElementsByTagName('freguesia')->item(0)->nodeValue,
+                    'concelho' => $localidade->getElementsByTagName('concelho')->item(0)->nodeValue,
+                    'distrito' => $localidade->getElementsByTagName('distrito')->item(0)->nodeValue,
+                    'lugar' => self::lugar($doc, $id)
+                ];
 
             }
 
@@ -139,22 +120,18 @@ class EmigranteController extends Controller
 
     }
 
-    private function lugar($table, $id){
+    private function lugar($doc, $id){
 
-        foreach($table as $emigr) {
-            
-            if($emigr->getAttribute('name') == 'Lugar'){
+        $lugarTags = $doc->getElementsByTagName('Lugar');
 
-                $emigr = $emigr->getElementsByTagName('column');
+        foreach($lugarTags as $lugar) {
 
-                if($emigr->item(2)->nodeValue == $id){
-                    
-                    return [
-                        'id' => $emigr->item(0)->nodeValue,
-                        'nome' => $emigr->item(1)->nodeValue
-                    ];
-
-                }
+            if($lugar->getElementsByTagName('idLocalidade')->item(0)->nodeValue == $id){
+                
+                return [
+                    'id' => $id,
+                    'nome' => $lugar->getElementsByTagName('lugar')->item(0)->nodeValue
+                ];
 
             }
 
@@ -162,23 +139,19 @@ class EmigranteController extends Controller
 
     }
 
-    private function processos($table, $id){
+    private function processos($doc, $id){
+
+        $processoTags = $doc->getElementsByTagName('Processo');
         
         $processos = [];
 
-        foreach($table as $emigr) {
+        foreach($processoTags as $processo) {
 
-            if($emigr->getAttribute('name') == 'Processo'){
-
-                $emigr = $emigr->getElementsByTagName('column');
-
-                if($emigr->item(44)->nodeValue == $id){
-                    
-                    $processos[] = [
-                        'id' => $emigr->item(0)->nodeValue
-                    ];
-
-                }
+            if($processo->getElementsByTagName('idEmigrante')->item(0)->nodeValue == $id){
+                
+                $processos[] = [
+                    'id' => $processo->getElementsByTagName('numCM')->item(0)->nodeValue
+                ];
 
             }
 
