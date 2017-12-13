@@ -8,3 +8,5 @@
 8- O nome padrão está hardcoded nos controllers como "museu.xml"
 9- Para usar algo diferente disto, é necessário alterar o nome no controllers também
 10- Acesse o sistema pela URL "127.0.0.1:8000/"
+
+Luis Henrique Medeiros 201420333
