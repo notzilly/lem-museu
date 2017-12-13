@@ -7,12 +7,10 @@
 
         <title>Lista de Emigrantes</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
-
     </head>
     <body>
         <h2>Lista de Emigrantes</h2>
+        <a href="{{ route('home') }}">Voltar para index</a>
         <ul>
             @foreach($emigrantes as $emigrante)
                 <li><a href="{{ route('emigrantesShow', ['id' => $emigrante['id']]) }}">{{ $emigrante['nome'] }}</a></li>

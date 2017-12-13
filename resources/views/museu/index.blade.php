@@ -7,9 +7,6 @@
 
         <title>Museu da Emigração</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
-
     </head>
     <body>
         <h2>Bem-vindo ao Museu da Emigração</h2>

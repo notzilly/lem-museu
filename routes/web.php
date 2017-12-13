@@ -16,4 +16,6 @@ Route::get('/', 'MuseuController@index')->name('home');
 Route::get('/emigrantes', 'EmigranteController@index')->name('emigrantesIndex');
 Route::get('/emigrantes/{emigrante}', 'EmigranteController@show')->name('emigrantesShow');
 
+Route::get('/processo/{processo}', 'ProcessoController@show')->name('processo');
+
 Route::get('/xml/{filename}', 'XmlController@convertXML');

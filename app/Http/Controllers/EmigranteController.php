@@ -9,7 +9,7 @@ class EmigranteController extends Controller
 
     public function index(){
         
-        $lugarTags = new \DOMDocument();
+        $doc = new \DOMDocument();
     
         $doc->load(base_path('docs/museu.xml'));
     
@@ -73,9 +73,8 @@ class EmigranteController extends Controller
 
             }
     
-            
         }
-        dd($emigrante);
+        // dd($emigrante);
         return view('emigrantes.show', compact('emigrante'));
 
     }
